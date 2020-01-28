@@ -1,0 +1,107 @@
+---
+title: "Examen Estadistica y Probabilidades"
+author: "Gustavo Chalco Apaza"
+date: "1/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Caso: Fraudes con TC VISA
+
+### Preparamos ambiente
+
+```{r}
+#install.packages("devtools") # Instala herramientas para RStudio
+#devtools::install_github("hadley/readxl") # Instalamos libreria para leer ficheros XLSX
+setwd("/Users/gustavo/Desktop/examen_estadistica/") # Establecemos el directorio de trabajo
+```
+
+
+### 1) Leer el archivo en R (en cualquier formato)
+
+Para poder leer un fichero en R se utiliza los siguientes comandos
+
+```{r}
+
+library(readxl) # Cargamos la libreria para leer ficheros XLSX
+
+raw_data<-read_excel("Caso_Fraudes_Visa_Examen.xlsx")
+
+```
+
+Resumen de data cargada
+```{r}
+summary(raw_data)
+```
+
+## 2) Cuales son variables numéricas y categóricas
+
+
+```{r}
+str(raw_data)
+```
+
+
+## 3) Realizar los estadísticos descriptivos sobre variables cuantitativas
+
+* Media del Monton en Soles
+```{r}
+mean(raw_data$`Monto S/.`)
+```
+
+* Quartiles
+```{r}
+quantile(raw_data$`Monto S/.`)
+```
+
+* Histogramas
+```{r}
+hist(raw_data$`Monto S/.`)
+```
+
+* Diagramas de caja
+```{r}
+boxplot(raw_data$`Monto S/.`)
+```
+
+
+## 4) Ver frecuencias absolutas y relativas de las variables categóricas. Interpretar 1 variable.
+#### Ejemplo: Variable Tipo de Tarjeta
+#### Cuanto fraude es con tarjeta de crédito y débito, porcentajes de cada uno.
+
+Obtemos la cantidad de registros de ambos tipos de tarjeta
+```{r}
+# Convetimos la columna a tipo factor para poder trabajarla con R
+factor_tipo_tarjeta <- factor(raw_data$TIPOTARJETA)
+summary(factor_tipo_tarjeta)
+```
+
+Realizamos el calculo para hallar el % de tarjetas
+```{r}
+tipo_debito <- sum(factor_tipo_tarjeta == 'D') # 1023
+tipo_credito <- sum(factor_tipo_tarjeta == 'C') # 37897
+total_tarjeta <- tipo_credito + tipo_debito
+
+porc_debito <- round(tipo_debito / total_tarjeta, 2) * 100
+porc_credito <- round(tipo_credito / total_tarjeta, 2) * 100
+```
+```{r}
+sprintf("El porcentaje de casos de Fraude con Tajeta de Credito es de  %d%%", porc_credito)
+```
+```{r}
+sprintf("El porcentaje de casos de Fraude con Tajeta de Debito es de  %d%%", porc_debito)
+```
+
+
+
+```{r}
+# Convetimos la columna a tipo factor para poder trabajarla con R
+summary(factor(raw_data$BANCONOMBRE))
+```
+
+
+## 5) Realizar un modelo de respuesta binaria con el Tipo de tarjeta (Crédito y Débito) que
+## depende del Tipo de producto con el cual se realizó el fraude.
